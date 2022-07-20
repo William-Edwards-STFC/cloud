@@ -9,18 +9,6 @@ input:
   - alert_message
   - raw_payload
 tasks:
-  silence_check:
-    action: sensu.silence
-    input:
-      client: <% ctx().hostname %>
-      check: <% ctx().check_name %>
-    next:
-      - when: '{{ succeeded() }}'
-        do:
-          - check_dir_size
-      - when: '{{ failed() }}'
-        do:
-          - post_error_to_slack
   check_dir_size:
     action: check_dir_size
     input:
@@ -34,19 +22,6 @@ tasks:
       - when: '{{ failed() }}'
         do:
           - post_success_to_slack
-  validate_dir_size:
-    action: check_dir_size
-    input:
-      hosts: <% ctx().hostname %>
-      directory: <% ctx().directory %>
-      threshold: <% ctx().threshold %>
-    next:
-      - when: '{{ succeeded() }}'
-        do:
-          - post_success_to_slack
-      - when: '{{ failed() }}'
-        do:
-          - post_error_to_slack
   post_success_to_slack:
     action: chatops.post_message
     input:
